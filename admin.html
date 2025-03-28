@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="admin-container">
+    <h2>Admin Dashboard</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th>Programme Name</th>
+          <th>Total Expenses</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="formTable"></tbody>
+    </table>
+  </div>
+
+  <script>
+    async function fetchForms() {
+      const response = await fetch("http://127.0.0.1:5500/get-forms");
+      const forms = await response.json();
+      const table = document.getElementById("formTable");
+      table.innerHTML = "";
+
+      forms.forEach(form => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${form.department}</td>
+          <td>${form.programme_name}</td>
+          <td>${form.expenditure.totalExpenses}</td>
+          <td>${form.status}</td>
+          <td>
+            <button onclick="updateStatus('${form._id}', 'Approved')">Approve</button>
+            <button onclick="updateStatus('${form._id}', 'Declined')">Decline</button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    async function updateStatus(id, status) {
+      await fetch(`http://127.0.0.1:5500/update-status/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status })
+      });
+      fetchForms();
+    }
+
+    fetchForms();
+  </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Programme Approval Form</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="form-container">
+    <h2>KONGU ENGINEERING COLLEGE, PERUNDURAI</h2>
+    <h3>PROGRAMME APPROVAL FORM</h3>
+
+    <form id="approvalForm">
+      <div class="row">
+        <div class="form-group">
+          <label>Dept.Ref.No:</label>
+          <input type="text" name="dept_ref" required>
+        </div>
+        <div class="form-group">
+          <label>Date:</label>
+          <input type="date" name="date" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Department:</label>
+        <input type="text" name="department" required>
+      </div>
+
+      <div class="form-group">
+        <label>Programme Name:</label>
+        <input type="text" name="programme_name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Norms under which it is proposed:</label>
+        <input type="text" name="norms" required>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label>From:</label>
+          <input type="date" name="start_date" required>
+        </div>
+        <div class="form-group">
+          <label>To:</label>
+          <input type="date" name="end_date" required>
+        </div>
+        <div class="form-group">
+          <label>No. of Days:</label>
+          <input type="number" name="no_of_days" min="1" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Programme For:</label>
+        <div class="checkbox-group">
+          <input type="checkbox" name="programme_for[]" value="Faculty"> Faculty
+          <input type="checkbox" name="programme_for[]" value="Students"> Students
+          <input type="checkbox" name="programme_for[]" value="Others"> Others
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Highlights of the Programme:</label>
+        <textarea name="highlights" rows="3"></textarea>
+      </div>
+
+      <!-- Expenditure Table -->
+      <h3>Expenditure</h3>
+      <table>
+        <tr>
+          <th>S.No</th>
+          <th>Purpose</th>
+          <th>Proposed</th>
+          <th>Revised</th>
+          <th>Actual</th>
+          <th>Remarks</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td><input type="text" name="exp_purpose1"></td>
+          <td><input type="number" name="proposed1" class="expense" oninput="calculateTotal()"></td>
+          <td><input type="number" name="revised1"></td>
+          <td><input type="number" name="actual1"></td>
+          <td><input type="text" name="remarks1"></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><input type="text" name="exp_purpose2"></td>
+          <td><input type="number" name="proposed2" class="expense" oninput="calculateTotal()"></td>
+          <td><input type="number" name="revised2"></td>
+          <td><input type="number" name="actual2"></td>
+          <td><input type="text" name="remarks2"></td>
+        </tr>
+      </table>
+
+      <div class="form-group">
+        <label>Total Expenses:</label>
+        <input type="text" id="totalExpenses" name="totalExpenses" readonly>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    function calculateTotal() {
+      let total = 0;
+      document.querySelectorAll(".expense").forEach(input => {
+        total += Number(input.value) || 0;
+      });
+      document.getElementById("totalExpenses").value = total;
+    }
+
+    document.getElementById("approvalForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const formData = new FormData(this);
+      const jsonData = {};
+      formData.forEach((value, key) => jsonData[key] = value);
+
+      const response = await fetch("http://localhost:5500/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(jsonData)
+      });
+
+      const result = await response.json();
+      alert(result.message);
+    });
+  </script>
+
+</body>
+</html>
+
